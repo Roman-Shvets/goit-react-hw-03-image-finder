@@ -3,9 +3,18 @@ import PropTypes from 'prop-types';
 import css from './ImageGallery.module.css';
 
 const ImageGallery = ({ toRender }) => {
+  const { pictures } = toRender;
+
   return (
     <ul className={css.ImageGallery}>
-      <ImageGalleryItem toRender={toRender} />
+      {pictures.map(({ id, tags, webformatURL, largeImageURL }) => (
+        <ImageGalleryItem
+          key={id}
+          webformatURL={webformatURL}
+          tags={tags}
+          largeImageURL={largeImageURL}
+        />
+      ))}
     </ul>
   );
 };

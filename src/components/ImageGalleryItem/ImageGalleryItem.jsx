@@ -6,36 +6,31 @@ import Modal from 'components/Modal/Modal';
 class ImageGalleryItem extends Component {
   state = {
     isModalOpen: false,
-    pathImage: '',
   };
 
   openModal = event => {
-    this.setState({ isModalOpen: true, pathImage: event.target.src });
+    this.setState({ isModalOpen: true });
   };
 
-  closeModal = () => this.setState({ isModalOpen: false });
+  closeModal = () => {
+    this.setState({ isModalOpen: false });
+  };
 
   render() {
-    const { pictures } = this.props.toRender;
+    const { webformatURL, tags, largeImageURL } = this.props;
     const { isModalOpen } = this.state;
 
     return (
       <>
-        {pictures.map(({ id, webformatURL, tags, largeImageURL }) => (
-          <li
-            key={id}
-            className={css.ImageGalleryItem}
-            onClick={this.openModal}
-          >
-            <img
-              className={css.ImageGalleryItemImage}
-              src={webformatURL}
-              alt={tags}
-            />
-          </li>
-        ))}
+        <li className={css.ImageGalleryItem} onClick={this.openModal}>
+          <img
+            className={css.ImageGalleryItemImage}
+            src={webformatURL}
+            alt={tags}
+          />
+        </li>
         {isModalOpen && (
-          <Modal onClose={this.closeModal} pathImage={this.state.pathImage} />
+          <Modal onClose={this.closeModal} pathImage={largeImageURL} />
         )}
       </>
     );
@@ -45,10 +40,7 @@ class ImageGalleryItem extends Component {
 export default ImageGalleryItem;
 
 ImageGalleryItem.propTypes = {
-  toRender: PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    page: PropTypes.number.isRequired,
-    pictures: PropTypes.array.isRequired,
-    isLoading: PropTypes.bool.isRequired,
-  }),
+  webformatURL: PropTypes.string.isRequired,
+  tags: PropTypes.string.isRequired,
+  largeImageURL: PropTypes.string.isRequired,
 };

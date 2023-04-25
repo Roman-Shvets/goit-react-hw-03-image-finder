@@ -14,6 +14,10 @@ export class App extends Component {
     page: 1,
     pictures: [],
     isLoading: false,
+    total: 0,
+    error: null,
+    largeImage: '',
+    tags: '',
   };
 
   formSubmitHandler = data => {
@@ -21,6 +25,10 @@ export class App extends Component {
       name: data.name,
       pictures: [],
       page: 1,
+      largeImage: '',
+      tags: '',
+      total: 0,
+      error: null,
     });
   };
 
@@ -29,7 +37,29 @@ export class App extends Component {
     this.setState({ page: counter });
   };
 
-  async componentDidUpdate(prevProps, prevState) {
+  fetchPictures = async (query, page) => {
+    try {
+      this.setState({ isLoading: true });
+
+      const responce = await axios.get(
+        `/?q=${query}&page=${page}&key=34100220-38e5a3f6c25c883f1441c4bda&image_type=photo&orientation=horizontal&per_page=12`
+      );
+
+      if (responce.data.hits.length === 0) {
+        return alert('We have not found anything for this search...');
+      }
+      this.setState(({ pictures }) => ({
+        pictures: [...pictures, ...responce.data.hits],
+        total: responce.data.totalHits,
+      }));
+    } catch (error) {
+      this.setState({ error });
+    } finally {
+      this.setState({ isLoading: false });
+    }
+  };
+
+  componentDidUpdate(prevProps, prevState) {
     const query = this.state.name;
     const page = this.state.page;
 
@@ -37,29 +67,22 @@ export class App extends Component {
       prevState.name !== this.state.name ||
       prevState.page !== this.state.page
     ) {
-      this.setState({ isLoading: true });
-      const response = await axios.get(
-        `/?q=${query}&page=${page}&key=34100220-38e5a3f6c25c883f1441c4bda&image_type=photo&orientation=horizontal&per_page=12`
-      );
-
-      this.setState(prevState => ({
-        pictures: [...prevState.pictures, ...response.data.hits],
-        isLoading: false,
-      }));
+      this.fetchPictures(query, page);
     }
   }
 
   render() {
-    const { pictures, isLoading } = this.state;
+    const { pictures, isLoading, total } = this.state;
+    const totalPage = total / pictures.length;
 
     return (
       <div className={css.App}>
         <Searchbar onSubmit={this.formSubmitHandler} />
         <div>
           {pictures.length > 0 ? <ImageGallery toRender={this.state} /> : null}
-          {isLoading ? (
-            <Loader />
-          ) : (
+
+          {isLoading && <Loader />}
+          {totalPage > 1 && !isLoading && pictures.length !== 0 && (
             <Button
               toVisible={this.state}
               pageSubmit={this.buttonPaginateHandler}

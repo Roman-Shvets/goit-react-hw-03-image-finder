@@ -1,7 +1,11 @@
 .Searchbar {
     top: 0;
     left: 0;
-    position: sticky;
+    /* position: sticky;  */
+   
+    width: 100%;
+    position: fixed;
+
     z-index: 1100;
     display: flex;
     justify-content: center;
@@ -25,6 +29,7 @@
     background-color: #fff;
     border-radius: 3px;
     overflow: hidden;
+    
 }
 
 .SearchFormButton {
